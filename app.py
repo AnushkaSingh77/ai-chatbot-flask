@@ -1,16 +1,16 @@
 from flask import Flask, render_template, request, jsonify
-from openai import OpenAI
+from groq import Groq
 import os
 from dotenv import load_dotenv
 
-# Load our secret keys
+# Secret keys लोड करें
 load_dotenv()
 
 app = Flask(__name__)
 
-# Set up the OpenAI client safely
-api_key = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=api_key) if api_key else None
+# Groq client को सेटअप करें (OpenAI की जगह अब हम Groq का इस्तेमाल कर रहे हैं)
+api_key = os.getenv("OPENAI_API_KEY") # रेंडर पर नाम यही रहेगा, चाबी groq की चलेगी
+client = Groq(api_key=api_key) if api_key else None
 
 @app.route("/")
 def home():
@@ -20,13 +20,13 @@ def home():
 def chat():
     user_message = request.json.get("message")
     
-    # If no API key is added yet, just mirror the text so it doesn't crash
     if not client:
-        return jsonify({"reply": f"Offline Mode: You said '{user_message}'. (Add your API key on Render to get real AI replies!)"})
+        return jsonify({"reply": "Error: API Key missing on Render!"})
     
     try:
+        # Groq के सबसे तेज़ और मुफ़्त मॉडल 'llama-3.3-70b-versatile' का इस्तेमाल
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": user_message}]
         )
         bot_reply = response.choices[0].message.content
