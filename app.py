@@ -42,7 +42,7 @@ def chat():
             contents=user_message,
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_INSTRUCTION,
-                max_output_tokens=300,
+                max_output_tokens=1000,
             ),
         )
         bot_reply = response.text
